@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:background="@color/default_background"
+    android:layout_width="match_parent"
+    android:layout_height="233dp">
+
+
+    <LinearLayout
+        android:id="@+id/search_results_container"
+        tools:background="@color/default_background"
+        android:padding="@dimen/larger_padding"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            card_view:cardCornerRadius="30dp"
+            android:layout_width="134dp"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true">
+
+            <ImageView
+                android:id="@+id/ivArtworkUrl100"
+                android:adjustViewBounds="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:scaleType="centerCrop"
+
+                />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvTrackName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:textSize="@dimen/movie_title_text_size"
+                android:textColor="@color/colorYellow"
+                android:textStyle="bold"
+                tools:text="@string/title"
+                android:padding="@dimen/regular_padding"
+                />
+
+            <TextView
+                android:id="@+id/tvPrimaryGenreName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/movie_genre_text_size"
+                android:alpha="0.7"
+                android:textColor="@color/common_text"
+                tools:text="@string/genre"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/regular_padding"
+                android:paddingRight="@dimen/regular_padding"
+                android:paddingEnd="@dimen/regular_padding"
+                android:paddingBottom="@dimen/regular_padding"
+                android:paddingStart="@dimen/regular_padding"/>
+
+            <TextView
+                android:id="@+id/tvTrackPrice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:paddingStart="@dimen/regular_padding"
+                android:paddingLeft="@dimen/regular_padding"
+                android:paddingEnd="@dimen/regular_padding"
+                android:paddingRight="@dimen/regular_padding"
+                android:paddingBottom="@dimen/regular_padding"
+                android:textColor="@color/common_text"
+                android:textSize="@dimen/price_text_size"
+                android:gravity="bottom"
+                android:textStyle="bold"
+                tools:text="@string/price"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

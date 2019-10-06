@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="movie_image_height">250dp</dimen>
+    <dimen name="movie_title_text_size">23sp</dimen>
+    <dimen name="movie_genre_text_size">16sp</dimen>
+
+    <dimen name="movie_title_text_size_detail">35sp</dimen>
+    <dimen name="movie_genre_text_size_detail">20sp</dimen>
+    <dimen name="header_label_text_size_detail">20sp</dimen>
+    <dimen name="synopsis_content">15sp</dimen>
+
+    <dimen name="details_padding">20dp</dimen>
+    <dimen name="larger_padding">16dp</dimen>
+    <dimen name="common_card_radius">16dp</dimen>
+    <dimen name="regular_padding">8dp</dimen>
+    <dimen name="header_text_size">24sp</dimen>
+    <dimen name="recently_viewed_text_size">16sp</dimen>
+    <dimen name="genre_text_size">14sp</dimen>
+    <dimen name="short_description_text_size">15sp</dimen>
+    <dimen name="price_text_size">18sp</dimen>
+    <dimen name="regular_margin">8dp</dimen>
+    <dimen name="recentlyviewed_height">200dp</dimen>
+    <dimen name="searchresults_height">250dp</dimen>
+    <dimen name="recentlyviewed_ewidth">150dp</dimen>
+    <dimen name="movie_publisher_text_size">16sp</dimen>
+    <dimen name="recycler_loading_view_height">80dp</dimen>
+
+
+</resources>
