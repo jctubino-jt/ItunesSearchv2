@@ -1,7 +1,10 @@
 package com.jctubino.itunessearch.request;
 
 
+import androidx.lifecycle.LiveData;
+
 import com.jctubino.itunessearch.models.Movie;
+import com.jctubino.itunessearch.request.responses.ApiResponse;
 import com.jctubino.itunessearch.request.responses.MovieSearchResponse;
 
 import retrofit2.Call;
@@ -13,14 +16,14 @@ public interface MovieApi {
 
     // Normal Search
     @GET("search?media=movie&country=au")
-    Call<MovieSearchResponse> searchMovies(
+    LiveData<ApiResponse<MovieSearchResponse>> searchMovies(
             @Query("term") String term,
             @Query("limit") int limit
     );
 
     // For Pagination
     @GET("search?media=movie&country=au")
-    Call<MovieSearchResponse> searchMovies(
+    LiveData<ApiResponse<MovieSearchResponse>> searchMovies(
             @Query("term") String term,
             @Query("limit") int limit,
             @Query("offset") int offset
@@ -28,7 +31,7 @@ public interface MovieApi {
 
     // For single id search
     @GET("lookup")
-    Call<MovieSearchResponse> getMovie(
+    LiveData<ApiResponse<MovieSearchResponse>> getMovie(
             @Query("id") int id
     );
 

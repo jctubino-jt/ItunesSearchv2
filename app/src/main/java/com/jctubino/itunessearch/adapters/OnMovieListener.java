@@ -4,4 +4,6 @@ public interface OnMovieListener {
 
     void onMovieClick(int id);
 
+    void onCategoryClick(String category);
+
 }

@@ -1,87 +1,92 @@
 package com.jctubino.itunessearch.repositories;
 
+import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
+import com.jctubino.itunessearch.AppExecutors;
 import com.jctubino.itunessearch.models.Movie;
-import com.jctubino.itunessearch.request.MovieApiClient;
+import com.jctubino.itunessearch.persistence.MovieDao;
+import com.jctubino.itunessearch.persistence.MovieDatabase;
+import com.jctubino.itunessearch.request.ServiceGenerator;
+import com.jctubino.itunessearch.request.responses.ApiResponse;
+import com.jctubino.itunessearch.request.responses.MovieSearchResponse;
+import com.jctubino.itunessearch.util.NetworkBoundResource;
+import com.jctubino.itunessearch.util.Resource;
 
 import java.util.List;
 
 public class MovieRepository {
 
-    private static MovieRepository instance;
-    private MovieApiClient mMovieApiClient;
-    private MediatorLiveData<List<Movie>> mMovies = new MediatorLiveData<>();
-    private MutableLiveData<Boolean> mIsQueryExhausted = new MutableLiveData<>();
+    private static final String TAG = "MovieRepository";
 
-    public static MovieRepository getInstance(){
+    private static MovieRepository instance;
+    private MovieDao movieDao;
+
+    public static MovieRepository getInstance(Context context){
         if(instance == null){
-            instance = new MovieRepository();
+            instance = new MovieRepository(context);
         }
         return instance;
     }
 
-    public MovieRepository() {
-        mMovieApiClient = MovieApiClient.getInstance();
-        initMediators();
+    private MovieRepository(Context context){
+        movieDao = MovieDatabase.getInstance(context).getMovieDao();
     }
 
-    private void initMediators(){
-        LiveData<List<Movie>> recipeListApiSource = mMovieApiClient.getMovies();
-        mMovies.addSource(recipeListApiSource, new Observer<List<Movie>>() {
+    public LiveData<Resource<List<Movie>>> searchMoviesApi(final String term, final int limit){
+        return new NetworkBoundResource<List<Movie>, MovieSearchResponse>(AppExecutors.getInstance()){
+
+            //Insert Data into cache
             @Override
-            public void onChanged(@Nullable List<Movie> recipes) {
+            protected void saveCallResult(@NonNull MovieSearchResponse item) {
+                if(item.getMovies() != null){
+                    Movie[] movies = new Movie[item.getMovies().size()];
 
-                if(recipes != null){
-                    mMovies.setValue(recipes);
-                    doneQuery(recipes);
-                }
-                else{
-                    // search database cache
-                    doneQuery(null);
+                    int index = 0;
+                    for(long rowid: movieDao.insertMovies((Movie[])(item.getMovies().toArray(movies)))){
+                        if(rowid == -1){ //conflict detected
+                            Log.d(TAG, "saveCallResult: CONFLICT...Movie is already in the cache");
+                            //If movie already exists, timestamp will not be set because they will be erased
+                            movieDao.updateMovie(
+                                    movies[index].getTrackId(),
+                                    movies[index].getTrackName(),
+                                    movies[index].getPrimaryGenreName(),
+                                    movies[index].getTrackPrice(),
+                                    movies[index].getCurrency(),
+                                    movies[index].getArtworkUrl100()
+                            );
+                        }
+                        index++;
+                    }
                 }
             }
-        });
-    }
 
-    private void doneQuery(List<Movie> list){
-        if(list != null){
-            if (list.size() % 30 != 0) {
-                mIsQueryExhausted.setValue(true);
+            //determines if a data should be fetched from online
+            //refresh cache everytime
+            @Override
+            protected boolean shouldFetch(@Nullable List<Movie> data) {
+                return true;
             }
-        }
-        else{
-            mIsQueryExhausted.setValue(true);
-        }
-    }
 
-    public LiveData<List<Movie>> getMovies(){
-        return mMovies;
-    }
-    public LiveData<Movie> getMovie(){
-        return mMovieApiClient.getMovie();
-    }
+            //retrieving data from cache. WIll access MovieDao
+            @NonNull
+            @Override
+            protected LiveData<List<Movie>> loadFromDb() {
+                return movieDao.searchMovies(term, limit);
+            }
 
-    public LiveData<Boolean> isQueryExhausted(){
-        return mIsQueryExhausted;
-    }
-
-
-    public void searchMovieById(int id){
-        mMovieApiClient.searchMovieById(id);
-    }
-
-    public void searchMoviesApi(String term, int limit){
-    //if(pageNumber==0){
-    mMovieApiClient.searchMoviesApi(term, limit);
-    }
-
-    public LiveData<Boolean> isMovieRequestTimedOut(){
-        return mMovieApiClient.isMovieRequestTimedOut();
+            //returning an object of livedata
+            //creating a retrofit call object
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<MovieSearchResponse>> createCall() {
+                return ServiceGenerator.getMovieApi().searchMovies(term, limit);
+            }
+        }.getAsLiveData();
     }
 }
 

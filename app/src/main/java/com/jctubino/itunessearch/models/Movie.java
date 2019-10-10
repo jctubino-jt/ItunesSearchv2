@@ -3,41 +3,73 @@ package com.jctubino.itunessearch.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "movies")
 public class Movie implements Parcelable {
 
+    @PrimaryKey
+    @NonNull
+    private int trackId;
+
+    @ColumnInfo(name = "track_name")
     //Needed for the home page
     private String trackName;
+
+    @ColumnInfo(name = "track_genre")
     private String primaryGenreName;
+
+    @ColumnInfo(name = "track_short_description")
     private String shortDescription;
+
+    @ColumnInfo(name = "track_price")
     private float trackPrice;
+
+    @ColumnInfo(name = "track_currency")
     private String currency;
+
+    @ColumnInfo(name = "track_image")
     private String artworkUrl100;
 
     //Needed for the details page
-    private int trackId;
+
+    @ColumnInfo(name = "track_preview_url")
     private String previewUrl;
+
+    @ColumnInfo(name = "track_long_description")
     private String longDescription;
+
+    @ColumnInfo(name = "track_time")
     private int trackTimeMillis;    //This needs conversion to Hour
+
+    @ColumnInfo(name = "track_advisory_rating")
     private String contentAdvisoryRating;
+
+    @ColumnInfo(name = "track_release_date")
     private String releaseDate;  // This needs conversion to Date
 
+    @ColumnInfo(name = "track_timestamp")
+    private int timestamp;
 
-    public Movie(String trackName, String primaryGenreName, String shortDescription,
-                 float trackPrice, String currency, String artworkUrl100, int trackId,
-                 String previewUrl, String longDescription, int trackTimeMillis,
-                 String contentAdvisoryRating, String releaseDate) {
+
+    public Movie(int trackId, String trackName, String primaryGenreName, String shortDescription, float trackPrice, String currency, String artworkUrl100,
+                 String previewUrl, String longDescription, int trackTimeMillis, String contentAdvisoryRating, String releaseDate, int timestamp) {
+        this.trackId = trackId;
         this.trackName = trackName;
         this.primaryGenreName = primaryGenreName;
         this.shortDescription = shortDescription;
         this.trackPrice = trackPrice;
         this.currency = currency;
         this.artworkUrl100 = artworkUrl100;
-        this.trackId = trackId;
         this.previewUrl = previewUrl;
         this.longDescription = longDescription;
         this.trackTimeMillis = trackTimeMillis;
         this.contentAdvisoryRating = contentAdvisoryRating;
         this.releaseDate = releaseDate;
+        this.timestamp = timestamp;
     }
 
     public Movie() {
@@ -56,6 +88,7 @@ public class Movie implements Parcelable {
         trackTimeMillis = in.readInt();
         contentAdvisoryRating = in.readString();
         releaseDate = in.readString();
+        timestamp = in.readInt();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -170,18 +203,19 @@ public class Movie implements Parcelable {
     @Override
     public String toString() {
         return "Movie{" +
-                "trackName='" + trackName + '\'' +
+                "trackId=" + trackId +
+                ", trackName='" + trackName + '\'' +
                 ", primaryGenreName='" + primaryGenreName + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
                 ", trackPrice=" + trackPrice +
                 ", currency='" + currency + '\'' +
                 ", artworkUrl100='" + artworkUrl100 + '\'' +
-                ", trackId=" + trackId +
                 ", previewUrl='" + previewUrl + '\'' +
                 ", longDescription='" + longDescription + '\'' +
                 ", trackTimeMillis=" + trackTimeMillis +
                 ", contentAdvisoryRating='" + contentAdvisoryRating + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
+                ", timestamp=" + timestamp +
                 '}';
     }
 
@@ -204,5 +238,14 @@ public class Movie implements Parcelable {
         parcel.writeInt(trackTimeMillis);
         parcel.writeString(contentAdvisoryRating);
         parcel.writeString(releaseDate);
+        parcel.writeInt(timestamp);
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
     }
 }
