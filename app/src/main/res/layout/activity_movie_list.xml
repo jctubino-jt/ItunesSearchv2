@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_background"
     tools:context=".MovieListActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,15 +13,15 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/toolbar"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:id="@+id/search_view"
                 app:queryHint="Search">
 
             </androidx.appcompat.widget.SearchView>

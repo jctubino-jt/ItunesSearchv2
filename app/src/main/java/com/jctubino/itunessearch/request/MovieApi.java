@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 
 import com.jctubino.itunessearch.models.Movie;
 import com.jctubino.itunessearch.request.responses.ApiResponse;
+import com.jctubino.itunessearch.request.responses.MovieResponse;
 import com.jctubino.itunessearch.request.responses.MovieSearchResponse;
 
 import retrofit2.Call;
@@ -31,7 +32,7 @@ public interface MovieApi {
 
     // For single id search
     @GET("lookup")
-    LiveData<ApiResponse<MovieSearchResponse>> getMovie(
+    LiveData<ApiResponse<MovieResponse>> getMovie(
             @Query("id") int id
     );
 

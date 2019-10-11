@@ -1,79 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/parent"
-    android:visibility="gone">
+    android:background="@color/default_background"
+    android:id="@+id/parent">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/search_results_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        tools:background="@color/default_background">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="match_parent"
+            android:id="@+id/ivArtworkUrl100Detail"
             android:layout_height="250dp"
-            android:id="@+id/ivArtworkUrl100Details"
-            android:scaleType="centerCrop" />
+            android:src="@drawable/ic_launcher_background"
+            android:layout_width="fill_parent"
+            />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="#000"
-            android:id="@+id/tvTrackNameDetails"
-            android:padding="7dp"
-            android:layout_below="@+id/ivArtworkUrl100Details"
-            android:text="Some Movie title"/>
-
-
-        <LinearLayout
+            android:id="@+id/tvTrackNameDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="100"
-            android:layout_below="@+id/tvTrackNameDetails"
-            android:id="@+id/container"
-            android:padding="10dp">
+            android:maxLines="2"
+            android:paddingTop="@dimen/details_padding"
+            android:paddingRight="@dimen/details_padding"
+            android:paddingLeft="@dimen/details_padding"
+            android:textColor="@color/colorYellow"
+            android:textSize="@dimen/movie_title_text_size_detail"
+            android:textStyle="bold"
+            android:text="Title"
+            />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="90"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_below="@+id/tvTrackNameDetails"
-                android:id="@+id/tvLabelSynopsis"
-                android:text="Synopsis"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="10"
-                android:textSize="20dp"
-                android:textColor="@color/red"
-                android:id="@+id/tvTrackPriceDetails"
-                android:gravity="center"
-                android:text="100"/>
-
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvPrimaryGenreNameDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:orientation="vertical"
-            android:layout_below="@+id/container"
-            android:id="@+id/tvLongDescriptionDetails">
-        </LinearLayout>
+            android:maxLines="1"
+            android:paddingLeft="@dimen/details_padding"
+            android:textColor="@color/common_text"
+            android:textSize="@dimen/movie_genre_text_size_detail"
+            tools:text="@string/genre"
+            android:alpha="0.8"/>
 
+        <TextView
+            android:id="@+id/tvLabelSynopsis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingTop="@dimen/details_padding"
+            android:paddingLeft="@dimen/details_padding"
+            android:paddingRight="@dimen/details_padding"
+            android:textColor="@color/colorGreen"
+            android:textSize="@dimen/header_label_text_size_detail"
+            android:textStyle="bold"
+            android:text="Synopsis" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tvLongDescriptionDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="@dimen/larger_padding"
+            android:textColor="@color/common_text"
+            android:textSize="@dimen/synopsis_content"
+            android:textStyle="bold"
+            tools:text=" Content" />
+
+    </LinearLayout>
 </ScrollView>
-
-
 

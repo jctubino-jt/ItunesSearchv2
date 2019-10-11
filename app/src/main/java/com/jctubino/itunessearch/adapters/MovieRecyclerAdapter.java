@@ -21,11 +21,14 @@ import com.jctubino.itunessearch.R;
 import com.jctubino.itunessearch.models.Movie;
 import com.jctubino.itunessearch.util.Constants;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
+ListPreloader.PreloadModelProvider{
 
     private static final int MOVIE_TYPE = 1;
     private static final int LOADING_TYPE = 2;
@@ -37,9 +40,12 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private RequestManager requestManager;
     private ViewPreloadSizeProvider<String> preloadSizeProvider;
 
-    public MovieRecyclerAdapter(OnMovieListener mOnMovieListener, RequestManager requestManager){
+    public MovieRecyclerAdapter(OnMovieListener mOnMovieListener,
+                                RequestManager requestManager,
+                                ViewPreloadSizeProvider<String> viewPreloadSizeProvider){
         this.mOnMovieListener = mOnMovieListener;
         this.requestManager = requestManager;
+        this.preloadSizeProvider = viewPreloadSizeProvider;
     }
 
     //Responsible for creating ViewHolder
@@ -52,7 +58,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             case MOVIE_TYPE:{
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_movie_list_item, viewGroup, false);
-                return new MovieViewHolder(view, mOnMovieListener,requestManager);
+                return new MovieViewHolder(view, mOnMovieListener,requestManager,preloadSizeProvider);
             }
 
             case LOADING_TYPE:{
@@ -72,7 +78,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             default:{
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_movie_list_item, viewGroup, false);
-                return new MovieViewHolder(view, mOnMovieListener,requestManager);
+                return new MovieViewHolder(view, mOnMovieListener,requestManager,preloadSizeProvider);
             }
         }
 
@@ -203,5 +209,22 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }
         return null;
+    }
+
+    @NonNull
+    @Override
+    public List getPreloadItems(int position) {
+        String url = mMovies.get(position).getArtworkUrl100();
+        if(TextUtils.isEmpty(url)){
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(url);
+
+    }
+
+    @Nullable
+    @Override
+    public RequestBuilder<?> getPreloadRequestBuilder(@NonNull Object item) {
+        return requestManager.load(item);
     }
 }

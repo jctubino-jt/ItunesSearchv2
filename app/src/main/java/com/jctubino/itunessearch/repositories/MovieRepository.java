@@ -13,9 +13,12 @@ import com.jctubino.itunessearch.persistence.MovieDao;
 import com.jctubino.itunessearch.persistence.MovieDatabase;
 import com.jctubino.itunessearch.request.ServiceGenerator;
 import com.jctubino.itunessearch.request.responses.ApiResponse;
+import com.jctubino.itunessearch.request.responses.MovieResponse;
 import com.jctubino.itunessearch.request.responses.MovieSearchResponse;
+import com.jctubino.itunessearch.util.Constants;
 import com.jctubino.itunessearch.util.NetworkBoundResource;
 import com.jctubino.itunessearch.util.Resource;
+import com.jctubino.itunessearch.request.MovieApi;
 
 import java.util.List;
 
@@ -85,6 +88,52 @@ public class MovieRepository {
             @Override
             protected LiveData<ApiResponse<MovieSearchResponse>> createCall() {
                 return ServiceGenerator.getMovieApi().searchMovies(term, limit);
+            }
+        }.getAsLiveData();
+    }
+
+    public LiveData<Resource<Movie>> searchMoviesApi(final int movieId){
+        return new NetworkBoundResource<Movie, MovieResponse>(AppExecutors.getInstance()){
+
+            @Override
+            protected void saveCallResult(@NonNull MovieResponse item) {
+
+                if (item.getMovie() != null){
+                    item.getMovie().setTimestamp((int)System.currentTimeMillis()/1000);
+                    movieDao.insertMovie(item.getMovie());
+                }
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable Movie data) {
+                Log.d(TAG, "shouldFetch: movie" + data.toString());
+                int currentTime = (int)(System.currentTimeMillis()/100);
+                Log.d(TAG, "shouldFetch: current time " + currentTime);
+                int lastRefresh = data.getTimestamp();
+                Log.d(TAG, "shouldFetch: last refresh " + lastRefresh);
+                Log.d(TAG, "shouldFetch: it's been " + ((currentTime - lastRefresh) / 60 / 60 / 24) + " days since this recipe was refreshed. " +
+                        "30 days must elapse before refreshing");
+                if ((currentTime - data.getTimestamp()) >= Constants.MOVIE_REFRESH_TIME){
+                    Log.d(TAG, "shouldFetch: SHOULD REFRESH MOVIE? " + true);
+                    return true;
+                }
+
+                else{
+                    Log.d(TAG, "shouldFetch: SHOULD REFRESH MOVIE? " + false);
+                    return false;
+                }
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Movie> loadFromDb() {
+                return movieDao.getMovie(movieId);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<MovieResponse>> createCall() {
+                return ServiceGenerator.getMovieApi().getMovie(movieId);
             }
         }.getAsLiveData();
     }

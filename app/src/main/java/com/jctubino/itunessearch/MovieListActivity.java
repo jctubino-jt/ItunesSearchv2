@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.jctubino.itunessearch.adapters.MovieRecyclerAdapter;
 import com.jctubino.itunessearch.adapters.OnMovieListener;
 import com.jctubino.itunessearch.models.Movie;
@@ -138,11 +140,19 @@ public class MovieListActivity extends BaseActivity implements OnMovieListener {
     }
 
     private void initRecyclerView(){
-        mAdapter = new MovieRecyclerAdapter(this, initGlide());
+        ViewPreloadSizeProvider<String> viewPreloader = new ViewPreloadSizeProvider<>();
+        mAdapter = new MovieRecyclerAdapter(this, initGlide(),viewPreloader );
         VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(30);
         mRecyclerView.addItemDecoration(itemDecorator);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //how many will add to pagination
+        RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(
+                Glide.with(this),
+                mAdapter,
+                viewPreloader,
+                50);
     }
 
     private void initSearchView(){
@@ -176,4 +186,14 @@ public class MovieListActivity extends BaseActivity implements OnMovieListener {
         mAdapter.displaySearchCategories();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mMovieListViewModel.getViewState().getValue() == MovieListViewModel.ViewState.CATEGORIES){
+            super.onBackPressed();
+        }
+        else {
+            mMovieListViewModel.cancelSearchRequest();
+            mMovieListViewModel.setViewCategories();
+        }
+    }
 }

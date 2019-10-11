@@ -57,16 +57,16 @@ public class MovieListViewModel extends AndroidViewModel{
         return viewState;
     }
 
-    public void setViewCategories(){
-        viewState.setValue(ViewState.CATEGORIES);
-    }
-
     public LiveData<ViewState> getViewState(){
         return viewState;
     }
 
     public int getPageNumber(){
         return pageNumber;
+    }
+
+    public void setViewCategories(){
+        viewState.setValue(ViewState.CATEGORIES);
     }
 
     public LiveData<Resource<List<Movie>>> getMovies(){
@@ -87,45 +87,55 @@ public class MovieListViewModel extends AndroidViewModel{
     }
 
     public void executeSearch(){
+        requestStartTime = System.currentTimeMillis();
+        cancelRequest = false;
         isPerformingQuery = true;
         viewState.setValue(ViewState.MOVIES);
         final LiveData<Resource<List<Movie>>> repositorySource = movieRepository.searchMoviesApi(term, limit);
         movies.addSource(repositorySource, new Observer<Resource<List<Movie>>>() {
             @Override
             public void onChanged(@Nullable Resource<List<Movie>> listResource) {
-                if (listResource != null) {
-                    movies.setValue(listResource);
-                    //IF SUCCESS
-                    if (listResource.status == Resource.Status.SUCCESS){
-                        isPerformingQuery = false;
-                        if (listResource.data != null) {
-                            if (listResource.data.size() == 0) {
-                                Log.d(TAG, "onChanged: query is exhausted...");
-                                movies.setValue(
-                                        new Resource<List<Movie>>(
-                                                Resource.Status.ERROR,
-                                                listResource.data,
-                                                QUERY_EXHAUSTED
-                                        )
-                                );
+                if(!cancelRequest){
+                    if (listResource != null) {
+                        movies.setValue(listResource);
+                        //IF SUCCESS
+                        if (listResource.status == Resource.Status.SUCCESS){
+                            //how long did the request took
+                            Log.d(TAG, "onChanged: REQUEST TIME:" + (System.currentTimeMillis() - requestStartTime) / 1000 + " seconds. ");
+                            isPerformingQuery = false;
+                            if (listResource.data != null) {
+                                if (listResource.data.size() == 0) {
+                                    Log.d(TAG, "onChanged: query is exhausted...");
+                                    movies.setValue(
+                                            new Resource<List<Movie>>(
+                                                    Resource.Status.ERROR,
+                                                    listResource.data,
+                                                    QUERY_EXHAUSTED
+                                            )
+                                    );
+                                }
                             }
+                            movies.removeSource(repositorySource);
                         }
-                        movies.removeSource(repositorySource);
+                        //IF ERROR
+                        else if (listResource.status == Resource.Status.ERROR) {
+                            Log.d(TAG, "onChanged: REQUEST TIME:" + (System.currentTimeMillis() - requestStartTime) / 1000 + " seconds. ");
+                            isPerformingQuery = false;
+                            movies.removeSource(repositorySource);
+                        }
                     }
-                    //IF ERROR
-                    else if (listResource.status == Resource.Status.ERROR) {
-                        isPerformingQuery = false;
+                    else {
+                        //remove because observer will continue observing duplicates
                         movies.removeSource(repositorySource);
                     }
                 }
-                else {
-                    //remove because observer will continue observing duplicates
+                else{
                     movies.removeSource(repositorySource);
                 }
             }
         });
     }
-
+    
     public void cancelSearchRequest(){
         if(isPerformingQuery){
             Log.d(TAG, "cancelSearchRequest: canceling the search request.");
